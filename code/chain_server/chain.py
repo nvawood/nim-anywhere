@@ -31,6 +31,15 @@ from pydantic import BaseModel
 from . import prompts
 from .configuration import config as app_config
 
+from nemoguardrails import RailsConfig
+from nemoguardrails.integrations.langchain.runnable_rails import RunnableRails
+
+guardrails_config = RailsConfig.from_path("/opt/nemoguardrails/config.yml")
+
+# Using LCEL, you first create a RunnableRails instance, and "apply" it using the "|" operator
+guardrails = RunnableRails(guardrails_config)
+#chain_with_guardrails = guardrails | some_chain
+
 # %% unstructured data retrieval components
 embedding_model = NVIDIAEmbeddings(
     model=app_config.embedding_model.name,
@@ -94,7 +103,7 @@ async def question_parsing(msg, config) -> str:
     """Condense the question with chat history"""
 
     condense_question_prompt = prompts.CONDENSE_QUESTION_TEMPLATE.with_config(run_name="condense_question_prompt")
-    condensed_chain = condense_question_prompt | llm | StrOutputParser().with_config(run_name="condense_question_chain")
+    condensed_chain = guardrails | condense_question_prompt | llm | StrOutputParser().with_config(run_name="condense_question_chain")
     if msg["history"]:
         return condensed_chain.invoke(msg, config)
     return msg["question"]

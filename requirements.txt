@@ -9,6 +9,8 @@ langchain-milvus==0.1.5
 langchain-nvidia-ai-endpoints==0.3.0
 langchain-openai==0.2.2
 langserve==0.3.0
+nemoguardrails@git+https://github.com/NVIDIA/NeMo-Guardrails.git@develop#egg=nemoguardrails
+langchain-nvidia-ai-endpoints
 opentelemetry-instrumentation-fastapi==0.48b0
 pydantic
 pymilvus==2.4.7

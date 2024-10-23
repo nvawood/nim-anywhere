@@ -72,3 +72,32 @@ EOM
 # clean up
 sudo apt-get autoremove -y
 sudo rm -rf /var/cache/apt
+
+sudo mkdir /opt/nemoguardrails
+cat << END | sudo tee /opt/nemoguardrails/config.yml
+colang_version: "2.x"
+
+models:
+  - type: main
+    engine: nvidia_ai_endpoints
+    model: meta/llama3-8b-instruct
+
+rails:
+  output:
+    flows:
+      - self check facts
+      - self check hallucination
+
+prompts:
+  - task: self_check_facts
+    content: |-
+      You are given a task to identify if the hypothesis is grounded and entailed to the evidence.
+      You will only use the contents of the evidence and not rely on external knowledge.
+      Answer with yes/no. "evidence": {{ evidence }} "hypothesis": {{ response }} "entails":
+
+  - task: self_check_hallucinations
+    content: |-
+      You are given a task to identify if the hypothesis is in agreement with the context below.
+      You will only use the contents of the context and not rely on external knowledge.
+      Answer with yes/no. "context": {{ paragraph }} "hypothesis": {{ statement }} "agreement":
+END

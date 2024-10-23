@@ -1,5 +1,6 @@
 ca-certificates
 curl
+g++
 jq
 less
 make
